@@ -326,9 +326,12 @@ export function DokumentasiTable({ data, role }: DokumentasiTableProps) {
                                                         <Button
                                                             variant="outline"
                                                             size="sm"
-                                                            className="h-7 px-2.5 bg-violet-50/50 text-violet-600 hover:bg-violet-100 hover:text-violet-700 border-violet-100 dark:bg-violet-950/20 dark:text-violet-400 dark:border-violet-900/50 dark:hover:bg-violet-950/40 text-[9px] font-bold gap-1"
-                                                            onClick={() => setValidateId(item.id)}
-                                                            title="Validasi Kepala"
+className="h-7 px-2.5
+bg-teal-50 text-teal-600 border-teal-200
+hover:bg-teal-100 hover:text-teal-700
+dark:bg-teal-950/30 dark:text-teal-400 dark:border-teal-900/50
+dark:hover:bg-teal-900/40
+text-[9px] font-bold gap-1"                                                            title="Validasi Kepala"
                                                         >
                                                             <CheckCircle2 className="size-3" /> Validasi Kepala
                                                         </Button>
@@ -344,12 +347,16 @@ export function DokumentasiTable({ data, role }: DokumentasiTableProps) {
                                             <td className="px-3 py-2.5">
                                                 <div className="flex flex-col gap-1 items-start">
                                                     {item.validasiKepala ? (
-                                                        <Badge variant="default" className="bg-green-600 hover:bg-green-700 gap-1 py-0.5 px-2 text-[10px] font-semibold tracking-wide text-black dark:text-white">
+                                                        <Badge variant="default" className="bg-emerald-100 text-emerald-700 border-emerald-200
+  dark:bg-emerald-900/40 dark:text-emerald-400 dark:border-emerald-800
+  gap-1 py-0.5 px-2 text-[10px] font-semibold tracking-wide">
                                                             <CheckCircle2 className="size-2.5" /> Sudah Divalidasi
                                                         </Badge>
                                                     ) : (
                                                         <>
-                                                            <Badge variant="default" className="bg-red-600 hover:bg-red-700 gap-1 py-0.5 px-2 text-[10px] font-semibold tracking-wide text-black dark:text-white">
+                                                            <Badge variant="default" className="bg-amber-100 text-amber-700 border-amber-200
+  dark:bg-amber-900/40 dark:text-amber-400 dark:border-amber-800
+  gap-1 py-0.5 px-2 text-[10px] font-semibold tracking-wide">
                                                                 <Clock className="size-2.5" /> Belum Divalidasi
                                                             </Badge>
                                                         </>

@@ -44,17 +44,6 @@ function DetailBadges({ item }: { item: DokumentasiItem }) {
 export function VerificationBadge({ item, onShowCatatan }: VerificationBadgeProps) {
     const anyVerified = item.verifikasiFoto || item.verifikasiDesain || item.verifikasiCaption;
 
-    if (item.status === 'belum' && !anyVerified) {
-        return (
-            <Badge
-                variant="outline"
-                className="gap-1.5 py-1 px-2.5 text-[10px] font-semibold tracking-wide text-rose-500 bg-transparent border-rose-500 dark:text-rose-400 dark:border-rose-400"
-            >
-                <Clock className="size-3" /> BELUM DIVERIFIKASI
-            </Badge>
-        );
-    }
-
     if (item.status === 'terverifikasi' || (item.status === 'belum' && anyVerified)) {
         return <DetailBadges item={item} />;
     }
@@ -75,7 +64,7 @@ export function VerificationBadge({ item, onShowCatatan }: VerificationBadgeProp
                     </Badge>
                 ) : (
                     <Badge variant="outline" className="gap-1.5 py-1 px-2.5 text-[10px] font-semibold tracking-wide text-rose-500 bg-transparent border-rose-500 dark:text-rose-400 dark:border-rose-400">
-                        <XCircle className="size-3" /> PERLU REVISI
+                        <XCircle className="size-3" /> Perlu Revisi
                     </Badge>
                 )}
                 <Button
@@ -86,19 +75,11 @@ export function VerificationBadge({ item, onShowCatatan }: VerificationBadgeProp
                 >
                     <Eye className="size-2.5" /> Lihat Alasan
                 </Button>
-                {item.verifikasiFoto && <VerifiedBadge label="Foto" />}
-                {item.verifikasiDesain && <VerifiedBadge label="Desain" />}
-                {item.verifikasiCaption && <VerifiedBadge label="Caption" />}
             </div>
         );
     }
 
     return (
-        <Badge
-            variant="outline"
-            className="gap-1.5 py-1 px-2.5 text-[10px] font-semibold tracking-wide text-muted-foreground bg-transparent border-border"
-        >
-            <Clock className="size-3" /> MENUNGGU
-        </Badge>
+        <DetailBadges item={item} />
     );
 }
