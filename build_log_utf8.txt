@@ -1,0 +1,84 @@
+﻿
+> build
+> vite build
+
+[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+[plugin @laravel/vite-plugin-wayfinder] Types generated for actions, routes, form variants
+transforming...
+[32mΓ£ô[39m 578 modules transformed.
+node.exe : 
+[31mΓ£ù[39m Build 
+failed in 11.77s
+At line:1 char:1
++ & "D:\Program\Node
+Js/node.exe" "D:\Pro
+gram\NodeJs/node_mod
+ules/npm/bi ...
++ ~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
+    + CategoryInfo  
+            : NotS  
+  pecified: ([31   
+ mΓ£ù[39m Build    
+ failed in 11.7    
+7s:String) [],     
+RemoteException
+    + FullyQualifie 
+   dErrorId : Nati  
+  veCommandError
+ 
+[31merror during 
+build:
+[31m[vite:load-fall
+back] Could not 
+load /resources/js/r
+outes/verification 
+(imported by resourc
+es/js/pages/auth/ver
+ify-email.tsx): 
+ENOENT: no such 
+file or directory, 
+open 'D:\resources\j
+s\routes\verificatio
+n'[31m
+    at async open (n
+ode:internal/fs/prom
+ises:637:25)
+    at async 
+Object.readFile (nod
+e:internal/fs/promis
+es:1269:14)
+    at async 
+Object.handler (file
+:///D:/Assignment/Co
+de/Laravel/dashboard
+_dokumentasi/node_mo
+dules/vite/dist/node
+/chunks/config.js:33
+169:21)
+    at async PluginD
+river.hookFirstAndGe
+tPlugin (file:///D:/
+Assignment/Code/Lara
+vel/dashboard_dokume
+ntasi/node_modules/r
+ollup/dist/es/shared
+/node-entry.js:22430
+:28)
+    at async file://
+/D:/Assignment/Code/
+Laravel/dashboard_do
+kumentasi/node_modul
+es/rollup/dist/es/sh
+ared/node-entry.js:2
+1422:33
+    at async 
+Queue.work (file:///
+D:/Assignment/Code/L
+aravel/dashboard_dok
+umentasi/node_module
+s/rollup/dist/es/sha
+red/node-entry.js:22
+658:32)[39m
