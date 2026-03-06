@@ -467,8 +467,26 @@ text-[9px] font-bold gap-1"                                                     
                             Catatan Revisi
                         </DialogTitle>
                     </DialogHeader>
-                    <div className="bg-amber-50 dark:bg-amber-950/20 p-4 rounded-lg border border-amber-100 dark:border-amber-900/30 font-medium text-slate-700 dark:text-slate-300">
-                        {selectedItem?.catatanRevisi || 'Tidak ada catatan.'}
+                    <div className="flex flex-col gap-2">
+                        {(selectedItem?.revisiItems && selectedItem.revisiItems.length > 0) ? (
+                            selectedItem.revisiItems.map((rev, idx) => {
+                                const labelMap: Record<string, string> = { foto: 'Foto', desain: 'Desain', caption: 'Caption' };
+                                return (
+                                    <div key={idx} className="rounded-lg border border-amber-100 dark:border-amber-900/30 overflow-hidden">
+                                        <div className="bg-amber-100/60 dark:bg-amber-900/30 px-3 py-1.5 text-[11px] font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
+                                            {labelMap[rev.kategori] ?? rev.kategori}
+                                        </div>
+                                        <div className="bg-amber-50 dark:bg-amber-950/20 px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300">
+                                            {rev.catatan}
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <div className="bg-amber-50 dark:bg-amber-950/20 p-4 rounded-lg border border-amber-100 dark:border-amber-900/30 font-medium text-slate-700 dark:text-slate-300">
+                                {selectedItem?.catatanRevisi || 'Tidak ada catatan.'}
+                            </div>
+                        )}
                     </div>
                     <DialogFooter>
                         <Button onClick={() => setCatatanOpen(false)}>Tutup</Button>

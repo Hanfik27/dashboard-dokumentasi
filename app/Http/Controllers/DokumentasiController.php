@@ -46,6 +46,7 @@ class DokumentasiController extends Controller
                     'verifikasiCaption' => $item->verifikasi_caption,
                     'catatanRevisi'    => $item->catatan_revisi,
                     'kategoriRevisi'   => $item->kategori_revisi,
+                    'revisiItems'      => $item->revisi_items ?? [],
                     'validasiKepala'   => $item->validasi_kepala,
                     'status'           => $item->status,
                     'userName'         => $item->user->name ?? '-',
@@ -114,6 +115,10 @@ class DokumentasiController extends Controller
                 $this->service->deleteFiles($dokumentasi->file_dokumentasi_path);
             }
             $dokumentasi->file_dokumentasi_path = $this->service->storeFiles($request->file('file_dokumentasi'), 'dokumentasi');
+            // File foto baru → reset verifikasi dan hapus entri revisi foto
+            $dokumentasi->verifikasi_foto = false;
+            $revisiItems = array_values(array_filter($dokumentasi->revisi_items ?? [], fn($i) => $i['kategori'] !== 'foto'));
+            $dokumentasi->revisi_items = $revisiItems;
         }
 
         if ($request->hasFile('file_desain')) {
@@ -121,7 +126,19 @@ class DokumentasiController extends Controller
                 $this->service->deleteFiles($dokumentasi->file_desain_path);
             }
             $dokumentasi->file_desain_path = $this->service->storeFiles($request->file('file_desain'), 'desain');
+            // File desain baru → reset verifikasi dan hapus entri revisi desain
+            $dokumentasi->verifikasi_desain = false;
+            $revisiItems = array_values(array_filter($dokumentasi->revisi_items ?? [], fn($i) => $i['kategori'] !== 'desain'));
+            $dokumentasi->revisi_items = $revisiItems;
         }
+
+        // Recalculate status berdasarkan verifikasi dan revisi terkini
+        $dokumentasi->status = $this->service->calculateStatusWithRevisi(
+            $dokumentasi->verifikasi_foto,
+            $dokumentasi->verifikasi_desain,
+            $dokumentasi->verifikasi_caption,
+            $dokumentasi->revisi_items ?? []
+        );
 
         $dokumentasi->save();
 

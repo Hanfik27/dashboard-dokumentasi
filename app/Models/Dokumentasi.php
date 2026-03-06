@@ -24,6 +24,7 @@ class Dokumentasi extends Model
         'verifikasi_caption',
         'catatan_revisi',
         'kategori_revisi',
+        'revisi_items',
         'validasi_kepala',
         'status',
     ];
@@ -38,6 +39,7 @@ class Dokumentasi extends Model
             'verifikasi_desain' => 'boolean',
             'verifikasi_caption' => 'boolean',
             'validasi_kepala' => 'boolean',
+            'revisi_items' => 'array',
         ];
     }
 

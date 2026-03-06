@@ -17,7 +17,8 @@ class DokumentasiVerificationController extends Controller
 
     /**
      * Simpan hasil verifikasi (foto, desain, caption).
-     * Status otomatis dihitung: 'terverifikasi' jika semua dicentang.
+     * Hapus entri dari revisi_items untuk kategori yang sudah diverifikasi.
+     * Status dihitung ulang dengan mempertimbangkan revisi aktif.
      */
     public function verify(Request $request, Dokumentasi $dokumentasi)
     {
@@ -33,15 +34,33 @@ class DokumentasiVerificationController extends Controller
         $dokumentasi->verifikasi_desain  = $validated['verifikasi_desain'];
         $dokumentasi->verifikasi_caption = $validated['verifikasi_caption'];
 
-        // Status: 'terverifikasi' hanya jika SEMUA 3 item dicentang
-        $dokumentasi->status = $this->service->calculateStatus(
+        // Hapus entri revisi dari revisi_items untuk kategori yang sudah diverifikasi
+        $revisiItems = $dokumentasi->revisi_items ?? [];
+
+        $revisiItems = array_values(array_filter($revisiItems, function ($item) use ($validated) {
+            $kategori = $item['kategori'];
+            // Hapus entri jika kategori tersebut sudah diverifikasi (true)
+            if ($kategori === 'foto'    && $validated['verifikasi_foto'])    return false;
+            if ($kategori === 'desain'  && $validated['verifikasi_desain'])  return false;
+            if ($kategori === 'caption' && $validated['verifikasi_caption']) return false;
+            return true;
+        }));
+
+        $dokumentasi->revisi_items = $revisiItems;
+
+        // Recalculate status: revisi jika masih ada revisi aktif
+        $dokumentasi->status = $this->service->calculateStatusWithRevisi(
             $validated['verifikasi_foto'],
             $validated['verifikasi_desain'],
-            $validated['verifikasi_caption']
+            $validated['verifikasi_caption'],
+            $revisiItems
         );
 
-        // Bersihkan catatan revisi saat verifikasi
-        $dokumentasi->catatan_revisi = null;
+        // Hapus catatan_revisi lama jika tidak ada lagi revisi aktif
+        if (empty($revisiItems)) {
+            $dokumentasi->catatan_revisi  = null;
+            $dokumentasi->kategori_revisi = null;
+        }
 
         $dokumentasi->save();
 
@@ -49,8 +68,8 @@ class DokumentasiVerificationController extends Controller
     }
 
     /**
-     * Kembalikan dokumentasi ke status revisi dengan catatan.
-     * Reset semua flag verifikasi.
+     * Tambahkan/update entri revisi di revisi_items untuk kategori tertentu.
+     * Reset verifikasi hanya untuk kategori yang direvisi.
      */
     public function revise(Request $request, Dokumentasi $dokumentasi)
     {
@@ -61,17 +80,31 @@ class DokumentasiVerificationController extends Controller
             'kategori_revisi' => 'required|in:foto,desain,caption',
         ]);
 
-        $dokumentasi->status          = 'revisi';
-        $dokumentasi->catatan_revisi  = $validated['catatan_revisi'];
-        $dokumentasi->kategori_revisi = $validated['kategori_revisi'];
+        $kategori = $validated['kategori_revisi'];
+        $catatan  = $validated['catatan_revisi'];
 
-        // Reset semua verifikasi
-        $dokumentasi->verifikasi_foto    = false;
-        $dokumentasi->verifikasi_desain  = false;
-        $dokumentasi->verifikasi_caption = false;
+        // Ambil revisi_items yang ada, atau array kosong
+        $revisiItems = $dokumentasi->revisi_items ?? [];
+
+        // Hapus entri lama untuk kategori yang sama (jika sudah ada), lalu tambahkan yang baru
+        $revisiItems = array_values(array_filter($revisiItems, fn($item) => $item['kategori'] !== $kategori));
+        $revisiItems[] = ['kategori' => $kategori, 'catatan' => $catatan];
+
+        $dokumentasi->revisi_items    = $revisiItems;
+        $dokumentasi->status          = 'revisi';
+        // Simpan juga ke kolom lama untuk backward compatibility
+        $dokumentasi->catatan_revisi  = $catatan;
+        $dokumentasi->kategori_revisi = $kategori;
+
+        // Reset verifikasi hanya untuk kategori yang direvisi
+        match ($kategori) {
+            'foto'    => $dokumentasi->verifikasi_foto    = false,
+            'desain'  => $dokumentasi->verifikasi_desain  = false,
+            'caption' => $dokumentasi->verifikasi_caption = false,
+        };
 
         $dokumentasi->save();
 
-        return back()->with('success', 'Data dikembalikan untuk revisi.');
+        return back()->with('success', 'Catatan revisi berhasil dikirim.');
     }
 }

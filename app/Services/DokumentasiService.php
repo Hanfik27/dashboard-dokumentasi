@@ -45,6 +45,20 @@ class DokumentasiService
     }
 
     /**
+     * Calculate status with active revisi items.
+     * Jika masih ada revisi aktif → 'revisi', meskipun sebagian sudah terverifikasi.
+     * Jika tidak ada revisi dan semua terverifikasi → 'terverifikasi'.
+     * Selainnya → 'belum'.
+     */
+    public function calculateStatusWithRevisi(bool $foto, bool $desain, bool $caption, array $revisiItems): string
+    {
+        if (!empty($revisiItems)) {
+            return 'revisi';
+        }
+        return ($foto && $desain && $caption) ? 'terverifikasi' : 'belum';
+    }
+
+    /**
      * Create a ZIP archive of files.
      */
     public function createZip(array $files, string $type, int $id): ?string

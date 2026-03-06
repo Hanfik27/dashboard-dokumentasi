@@ -1,7 +1,6 @@
 // resources/js/components/verification-badge.tsx
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Clock, Eye, XCircle } from 'lucide-react';
+import { Eye, XCircle } from 'lucide-react';
 import type { DokumentasiItem } from '@/types/dokumentasi';
 
 interface VerificationBadgeProps {
@@ -26,60 +25,61 @@ function UnverifiedBadge({ label }: { label: string }) {
             variant="secondary"
             className="text-muted-foreground bg-muted/50 border-border text-[10px] px-1.5 font-medium"
         >
-         {label}
+            {label}
         </Badge>
     );
 }
 
-function DetailBadges({ item }: { item: DokumentasiItem }) {
+function RevisiBadge({
+    label,
+    onShowCatatan,
+    item,
+}: {
+    label: string;
+    onShowCatatan: (item: DokumentasiItem) => void;
+    item: DokumentasiItem;
+}) {
     return (
-        <div className="flex flex-col gap-1">
-            {item.verifikasiFoto ? <VerifiedBadge label="Foto Diverifikasi" /> : <UnverifiedBadge label="Foto Belum Diverifikasi" />}
-            {item.verifikasiDesain ? <VerifiedBadge label="Desain Diverifikasi" /> : <UnverifiedBadge label="Desain Belum Diverifikasi" />}
-            {item.verifikasiCaption ? <VerifiedBadge label="Caption Diverifikasi" /> : <UnverifiedBadge label="Caption Belum Diverifikasi" />}
+        <div className="flex items-center gap-1">
+            <Badge
+                onClick={() => onShowCatatan(item)}
+                variant="outline"
+                className="text-rose-500 bg-transparent border-rose-500 dark:text-rose-400 dark:border-rose-400 text-[10px] px-2 py-0.5 font-semibold gap-1"
+            >
+                <Eye className="size-3" /> {label} Revisi
+            </Badge>
         </div>
     );
 }
 
 export function VerificationBadge({ item, onShowCatatan }: VerificationBadgeProps) {
-    const anyVerified = item.verifikasiFoto || item.verifikasiDesain || item.verifikasiCaption;
+    // Buat lookup set kategori yang sedang revisi
+    const revisiSet = new Set((item.revisiItems ?? []).map((r) => r.kategori));
 
-    if (item.status === 'terverifikasi' || (item.status === 'belum' && anyVerified)) {
-        return <DetailBadges item={item} />;
-    }
+    // Render per baris: jika kategori ada di revisiSet → badge revisi, else → badge verifikasi
+    const fotoRow = revisiSet.has('foto')
+        ? <RevisiBadge label="Foto" onShowCatatan={onShowCatatan} item={item} />
+        : item.verifikasiFoto
+            ? <VerifiedBadge label="Foto Diverifikasi" />
+            : <UnverifiedBadge label="Foto Belum Diverifikasi" />;
 
-    if (item.status === 'revisi') {
-        const kategoriLabel: Record<string, string> = {
-            foto: 'Foto',
-            desain: 'Desain',
-            caption: 'Caption',
-        };
-        const label = item.kategoriRevisi ? (kategoriLabel[item.kategoriRevisi] ?? item.kategoriRevisi) : null;
+    const desainRow = revisiSet.has('desain')
+        ? <RevisiBadge label="Desain" onShowCatatan={onShowCatatan} item={item} />
+        : item.verifikasiDesain
+            ? <VerifiedBadge label="Desain Diverifikasi" />
+            : <UnverifiedBadge label="Desain Belum Diverifikasi" />;
 
-        return (
-            <div className="flex flex-col gap-1.5 items-start">
-                {label ? (
-                    <Badge variant="outline" className="text-rose-500 bg-transparent border-rose-500 dark:text-rose-400 dark:border-rose-400 text-[10px] px-2 py-1 font-semibold gap-1">
-                        <XCircle className="size-3" /> {label} Revisi
-                    </Badge>
-                ) : (
-                    <Badge variant="outline" className="gap-1.5 py-1 px-2.5 text-[10px] font-semibold tracking-wide text-rose-500 bg-transparent border-rose-500 dark:text-rose-400 dark:border-rose-400">
-                        <XCircle className="size-3" /> Perlu Revisi
-                    </Badge>
-                )}
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 text-[10px] gap-1 px-1.5 text-muted-foreground hover:text-foreground hover:bg-muted"
-                    onClick={() => onShowCatatan(item)}
-                >
-                    <Eye className="size-2.5" /> Lihat Alasan
-                </Button>
-            </div>
-        );
-    }
+    const captionRow = revisiSet.has('caption')
+        ? <RevisiBadge label="Caption" onShowCatatan={onShowCatatan} item={item} />
+        : item.verifikasiCaption
+            ? <VerifiedBadge label="Caption Diverifikasi" />
+            : <UnverifiedBadge label="Caption Belum Diverifikasi" />;
 
     return (
-        <DetailBadges item={item} />
+        <div className="flex flex-col gap-1">
+            {fotoRow}
+            {desainRow}
+            {captionRow}
+        </div>
     );
 }

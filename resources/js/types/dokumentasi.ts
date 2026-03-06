@@ -5,6 +5,11 @@ export type FileInfo = {
     path: string;
 };
 
+export type RevisiItem = {
+    kategori: 'foto' | 'desain' | 'caption';
+    catatan: string;
+};
+
 export type DokumentasiItem = {
     id: number;
     tanggal: string;
@@ -17,6 +22,7 @@ export type DokumentasiItem = {
     verifikasiCaption: boolean;
     catatanRevisi: string | null;
     kategoriRevisi: string | null;
+    revisiItems: RevisiItem[];
     validasiKepala: boolean;
     status: 'belum' | 'terverifikasi' | 'revisi';
     userName?: string;
